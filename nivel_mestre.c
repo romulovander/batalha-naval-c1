@@ -11,31 +11,37 @@ void exibirTabuleiro(int tabuleiro[N][N]);
 // Protótipos das habilidades especiais
 int posicionarCone(int tabuleiro[N][N], int linha, int coluna);
 int validarPosicaoCone(int tabuleiro[N][N], int linha, int coluna);
+// Protótipos da habilidade Cruz
+int posicionarCruz(int tabuleiro[N][N], int linha, int coluna);
+int validarPosicaoCruz(int tabuleiro[N][N], int linha, int coluna);
 
 int main() {
-    int tabuleiro[N][N];
-    int conesPosicionados = 0;
+
+ int tabuleiro[N][N];
+    int formasPosicionadas = 0;
     
     srand(time(NULL));
     inicializarTabuleiro(tabuleiro);
     
     printf("🏆 NÍVEL MESTRE - BATALHA NAVAL COM HABILIDADES ESPECIAIS\n");
-    printf("📍 Testando posicionamento de Cone...\n\n");
+    printf("📍 Testando Cone ▲ e Cruz ✝️...\n\n");
     
-    // Tentar posicionar 3 cones em posições aleatórias
-    for (int i = 0; i < 10; i++) {
+    // Tentar posicionar 2 cones e 2 cruzes
+    for (int i = 0; i < 20; i++) {
         int linha = rand() % N;
         int coluna = rand() % N;
         
-        printf("Tentando posicionar cone em [%d][%d]\n", linha, coluna);
-        
-        if (posicionarCone(tabuleiro, linha, coluna)) {
-            conesPosicionados++;
-            if (conesPosicionados >= 3) break;
+        if (formasPosicionadas < 2 && posicionarCone(tabuleiro, linha, coluna)) {
+            formasPosicionadas++;
         }
+        else if (formasPosicionadas < 4 && posicionarCruz(tabuleiro, linha, coluna)) {
+            formasPosicionadas++;
+        }
+        
+        if (formasPosicionadas >= 4) break;
     }
     
-    printf("\n✅ Cones posicionados: %d/3\n", conesPosicionados);
+    printf("\n✅ Formas especiais posicionadas: %d/4\n", formasPosicionadas);
     exibirTabuleiro(tabuleiro);
     
     return 0;
@@ -99,3 +105,37 @@ int posicionarCone(int tabuleiro[N][N], int linha, int coluna) {
     }
     return 0; // Falha
 }
+// Função para validar posição da Cruz
+int validarPosicaoCruz(int tabuleiro[N][N], int linha, int coluna) {
+    // Verificar se a cruz cabe no tabuleiro
+    if (linha - 1 < 0 || linha + 1 >= N || coluna - 1 < 0 || coluna + 1 >= N) {
+        return 0; // Fora dos limites
+    }
+    
+    // Verificar se todas as posições estão livres
+    if (tabuleiro[linha][coluna] != AGUA) return 0;     // Centro
+    if (tabuleiro[linha - 1][coluna] != AGUA) return 0; // Norte
+    if (tabuleiro[linha + 1][coluna] != AGUA) return 0; // Sul
+    if (tabuleiro[linha][coluna - 1] != AGUA) return 0; // Oeste
+    if (tabuleiro[linha][coluna + 1] != AGUA) return 0; // Leste
+    
+    return 1; // Posição válida
+}
+
+// Função para posicionar Cruz
+int posicionarCruz(int tabuleiro[N][N], int linha, int coluna) {
+    if (validarPosicaoCruz(tabuleiro, linha, coluna)) {
+        // Posicionar a cruz (formato ✝)
+        tabuleiro[linha][coluna] = NAVIO;       // Centro
+        tabuleiro[linha - 1][coluna] = NAVIO;   // Norte
+        tabuleiro[linha + 1][coluna] = NAVIO;   // Sul
+        tabuleiro[linha][coluna - 1] = NAVIO;   // Oeste
+        tabuleiro[linha][coluna + 1] = NAVIO;   // Leste
+        
+        printf("✝️  Cruz posicionada em [%d][%d] (formato +)\n", linha, coluna);
+        return 1; // Sucesso
+    }
+    return 0; // Falha
+}
+
+
